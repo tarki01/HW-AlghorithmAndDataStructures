@@ -75,7 +75,7 @@ gradle jar
 # 1. GeneratePresetImpl - Жадный алгоритм O(n log n)
 Данный участок кода использует метод sort из класса Collections. Здесь применяется сортировка TimSort - сложность данного алгоритма O(n log n). Сортировка TimSort - гибридный алгоритм, который использует алгоритм бинарной вставки для малых подмассивов и сортировку слиянием для объединения отсортированных участков.
 
-'''java
+```java
 Collections.sort(units, new Comparator<Unit>() {
     @Override
     public int compare(Unit first, Unit second) {
@@ -89,6 +89,7 @@ Collections.sort(units, new Comparator<Unit>() {
         return Double.compare(secondHealthValue, firstHealthValue);
     }
 });
+```
 
 Основной алгоритм заполнения армии имеет сложность O(n), так как состоит из вложенных циклов, где внутренний цикл ограничен константой (максимум 11 юнитов одного типа). Проверка коллизий и выбор координат ограничен 63 ячейками (3×21), что считается константой O(1).
 

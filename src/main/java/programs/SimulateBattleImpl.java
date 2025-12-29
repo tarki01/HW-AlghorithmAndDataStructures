@@ -13,65 +13,65 @@ public class SimulateBattleImpl implements SimulateBattle {
     private PrintBattleLog printBattleLog;
 
     @Override
-    public void simulate(Army armyOne, Army armyTwo) throws InterruptedException {
-        int currentRound = 1;
+    public void simulate(Army firstArmy, Army secondArmy) throws InterruptedException {
+        int roundCounter = 1;
 
         while (true) {
 
-            List<Unit> livingUnitsFirst = new ArrayList<>();
-            List<Unit> livingUnitsSecond = new ArrayList<>();
+            List<Unit> activeFirstArmyUnits = new ArrayList<>();
+            List<Unit> activeSecondArmyUnits = new ArrayList<>();
 
-            for (Unit unit : armyOne.getUnits()) {
-                if (unit.isAlive()) {
-                    livingUnitsFirst.add(unit);
+            for (Unit unitObject : firstArmy.getUnits()) {
+                if (unitObject.isAlive()) {
+                    activeFirstArmyUnits.add(unitObject);
                 }
             }
 
-            for (Unit unit : armyTwo.getUnits()) {
-                if (unit.isAlive()) {
-                    livingUnitsSecond.add(unit);
+            for (Unit unitObject : secondArmy.getUnits()) {
+                if (unitObject.isAlive()) {
+                    activeSecondArmyUnits.add(unitObject);
                 }
             }
 
-            if (livingUnitsFirst.isEmpty() || livingUnitsSecond.isEmpty()) {
+            if (activeFirstArmyUnits.isEmpty() || activeSecondArmyUnits.isEmpty()) {
                 break;
             }
 
-            List<Unit> allActiveUnits = new ArrayList<>();
-            allActiveUnits.addAll(livingUnitsFirst);
-            allActiveUnits.addAll(livingUnitsSecond);
+            List<Unit> allAvailableUnits = new ArrayList<>();
+            allAvailableUnits.addAll(activeFirstArmyUnits);
+            allAvailableUnits.addAll(activeSecondArmyUnits);
 
-            allActiveUnits.sort(new java.util.Comparator<Unit>() {
+            allAvailableUnits.sort(new java.util.Comparator<Unit>() {
                 @Override
-                public int compare(Unit first, Unit second) {
-                    return Integer.compare(second.getBaseAttack(), first.getBaseAttack());
+                public int compare(Unit unitA, Unit unitB) {
+                    return Integer.compare(unitB.getBaseAttack(), unitA.getBaseAttack());
                 }
             });
 
-            List<Unit> eliminatedThisRound = new ArrayList<>();
+            List<Unit> destroyedInCurrentRound = new ArrayList<>();
 
-            for (Unit attackingUnit : allActiveUnits) {
-                if (!attackingUnit.isAlive() || eliminatedThisRound.contains(attackingUnit)) {
+            for (Unit currentAttacker : allAvailableUnits) {
+                if (!currentAttacker.isAlive() || destroyedInCurrentRound.contains(currentAttacker)) {
                     continue;
                 }
 
-                Unit targetUnit = attackingUnit.getProgram().attack();
+                Unit selectedTarget = currentAttacker.getProgram().attack();
 
-                if (targetUnit != null && (targetUnit.isAlive() || !eliminatedThisRound.contains(targetUnit))) {
+                if (selectedTarget != null && (selectedTarget.isAlive() || !destroyedInCurrentRound.contains(selectedTarget))) {
 
-                    logBattleAction(attackingUnit, targetUnit);
+                    logBattleAction(currentAttacker, selectedTarget);
 
-                    executeAttack(attackingUnit, targetUnit);
+                    executeAttack(currentAttacker, selectedTarget);
 
-                    if (targetUnit.getHealth() <= 0) {
-                        targetUnit.setHealth(0);
-                        targetUnit.setAlive(false);
-                        eliminatedThisRound.add(targetUnit);
+                    if (selectedTarget.getHealth() <= 0) {
+                        selectedTarget.setHealth(0);
+                        selectedTarget.setAlive(false);
+                        destroyedInCurrentRound.add(selectedTarget);
                     }
                 }
             }
 
-            currentRound++;
+            roundCounter++;
         }
     }
 

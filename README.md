@@ -228,7 +228,10 @@ public List<Unit> getSuitableUnits(List<List<Unit>> rowsOfUnits, boolean targeti
  - Поиск пути (основной цикл A*) — исследует ячейки поля, но количество обрабатываемых узлов ограничено размером поля (W×H), а не количеством юнитов
  - Восстановление пути — линейно зависит от длины найденного пути, которая в худшем случае составляет O(W+H)
 
-**Таким образом, общая сложность равна O(W·H·log(W·H))**
+**Таким образом, общая сложность равна O(n) + O(W·H·log(W·H)) + O(W+H). Однако, учитывая, что:
+ - O(W+H) поглощается O(W·H·log(W·H)), так как W+H ≤ 2·max(W,H), а W·H растёт быстрее.
+ - O(n) также поглощается, поскольку W·H·log(W·H) обычно >> n для больших полей.
+Итоговая сложность: O(W·H·log(W·H))**
 
 ```java
 public List<Edge> getTargetPath(Unit attackingUnit, Unit targetUnit, List<Unit> allUnitsOnField) {

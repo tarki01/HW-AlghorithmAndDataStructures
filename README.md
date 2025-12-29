@@ -226,8 +226,8 @@ public List<Unit> getSuitableUnits(List<List<Unit>> rowsOfUnits, boolean targeti
  - Инициализация препятствий: O(n) - проход по всем юнитам
  - Алгоритм A*: В худшем случае O(bᵈ), где b - коэффициент ветвления (8 направлений), d - глубина пути (Константа)
  - Восстановление пути: O(p), где p - длина пути (Константа)
- - 
-Алгоритм работает за O(n), поскольку цикл зависит только от количества юнитов.
+   
+**Алгоритм работает за O(n), поскольку цикл зависит только от количества юнитов.**
 
 ```java
 public List<Edge> getTargetPath(Unit attackingUnit, Unit targetUnit, List<Unit> allUnitsOnField) {
@@ -321,6 +321,6 @@ public List<Edge> getTargetPath(Unit attackingUnit, Unit targetUnit, List<Unit> 
     }
 ```
 
-Алгоритм работает за O(n), поскольку цикл зависит только от количества юнитов.
+**Алгоритм работает за O(n), поскольку цикл зависит только от количества юнитов.**
 
 

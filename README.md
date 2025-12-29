@@ -229,6 +229,7 @@ public List<Unit> getSuitableUnits(List<List<Unit>> rowsOfUnits, boolean targeti
  - Восстановление пути — линейно зависит от длины найденного пути, которая в худшем случае составляет O(W+H)
 
 Где,
+N — это количество юнитов
 W — ширина поля (FIELD_WIDTH = 27)
 H — высота поля (FIELD_HEIGHT = 21)
 

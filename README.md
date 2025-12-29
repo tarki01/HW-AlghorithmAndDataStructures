@@ -140,6 +140,8 @@ for (Unit unitTemplate : units) {
         }
 ```
 
+Таким образом, армия создаётся в рамках лимита очков а также учитывается стоимость. Помимо этого, юниты сортируются по убыванию baseAttack/cost, затем по health/cost.
+
 # 2. SimulateBattleImpl - Алгоритм симуляции боя O(n² log n)
 
 Алгоритм имеет несколько уровней вложенности:
@@ -202,6 +204,9 @@ for (Unit unitTemplate : units) {
         }
     }
 ```
+
+Таким образом, ходы сортируются по baseAttack, атака происходит, проверяется смерть и проверяется isAlive, мёртвые юниты пропускаются.
+
 # 3. SuitableForAttackUnitsFinderImpl - Линейный алгоритм O(n)
 
 Алгоритм состоит из:
@@ -231,14 +236,17 @@ public List<Unit> getSuitableUnits(List<List<Unit>> rowsOfUnits, boolean targeti
         }
 ```
 
+Таким образом, в коде проверяет свободную клетку перед юнитом а также если нет свободной клетки, юнит не добавляется.
 Общая сложность: O(n), где n - общее количество юнитов.
 
 # 4. UnitTargetPathFinderImpl - Алгоритм A* O(n)
 
 Алгоритм состоит из:
  - Инициализация препятствий: O(n) - проход по всем юнитам
- - Алгоритм A*: В худшем случае O(bᵈ), где b - коэффициент ветвления (8 направлений), d - глубина пути
- - Восстановление пути: O(p), где p - длина пути
+ - Алгоритм A*: В худшем случае O(bᵈ), где b - коэффициент ветвления (8 направлений), d - глубина пути (Константа)
+ - Восстановление пути: O(p), где p - длина пути (Константа)
+ - 
+Алгоритм работает за O(n), поскольку цикл зависит только от количества юнитов.
 
 ```java
 public List<Edge> getTargetPath(Unit attackingUnit, Unit targetUnit, List<Unit> allUnitsOnField) {
@@ -306,8 +314,32 @@ public List<Edge> getTargetPath(Unit attackingUnit, Unit targetUnit, List<Unit> 
         }
         return Collections.emptyList();
     }
+
+    private boolean isPositionValid(Cell cellPosition, boolean[][] blockedPositions) {
+        return cellPosition.xPos >= 0 && cellPosition.xPos < FIELD_WIDTH &&
+                cellPosition.yPos >= 0 && cellPosition.yPos < FIELD_HEIGHT &&
+                !blockedPositions[cellPosition.xPos][cellPosition.yPos];
+    }
+
+    private int estimateDistance(Cell fromCell, Cell toCell) {
+        int horizontalDistance = Math.abs(fromCell.xPos - toCell.xPos);
+        int verticalDistance = Math.abs(fromCell.yPos - toCell.yPos);
+        return 10 * (horizontalDistance + verticalDistance);
+    }
+
+    private List<Edge> buildPath(Map<String, Cell> predecessorMap, Cell finalCell) {
+        List<Edge> resultingPath = new ArrayList<>();
+        String currentKey = finalCell.xPos + "," + finalCell.yPos;
+        resultingPath.add(new Edge(finalCell.xPos, finalCell.yPos));
+        while (predecessorMap.containsKey(currentKey)) {
+            finalCell = predecessorMap.get(currentKey);
+            currentKey = finalCell.xPos + "," + finalCell.yPos;
+            resultingPath.add(0, new Edge(finalCell.xPos, finalCell.yPos));
+        }
+        return resultingPath;
+    }
 ```
 
-В контексте игрового поля 27×21 (567 клеток), алгоритм работает эффективно. Поскольку количество юнитов ограничено и распределено по полю, практическая сложность близка к O(n) для инициализации, а поиск пути зависит от размера поля, а не от количества юнитов.
+Алгоритм работает за O(n), поскольку цикл зависит только от количества юнитов.
 
 
